@@ -6,11 +6,15 @@ from backend.routes.dashboard import dashboard_bp
 from backend.routes.students import student_bp
 from backend.routes.drives import drive_bp
 from backend.routes.reports import report_bp
+import os
 
+# set paths
+script_directory = os.path.dirname(os.path.abspath(__file__))
+upload_folder = os.path.join(script_directory, "uploads")
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:3000"])
+CORS(app, resources={r"/*": {"origins": "http://localhost:3001"}})
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///vaccination.db'
-app.config['UPLOAD_FOLDER'] = r'D:\pythonProject\fsd_assignment\backend\uploads'
+app.config['UPLOAD_FOLDER'] = upload_folder
 db.init_app(app)
 
 app.register_blueprint(auth_bp)
