@@ -1,0 +1,11 @@
+name,student_id,student_class,dob,gender,guardian_name,contact_number,address
+Alice Johnson,S001,5,2012-06-10,Female,Mary Johnson,9876543210,"123 Maple Street, City"
+Bob Smith,S002,6,2011-04-15,Male,John Smith,9876543211,"456 Oak Avenue, City"
+Charlie Brown,S003,7,2010-01-25,Male,Emily Brown,9876543212,"789 Pine Road, City"
+Daisy Evans,S004,5,2012-08-20,Female,Thomas Evans,9876543213,"321 Birch Lane, City"
+Ethan Thomas,S005,6,2011-10-12,Male,Susan Thomas,9876543214,"654 Cedar Street, City"
+Fiona Clarke,S006,7,2010-03-30,Female,Robert Clarke,9876543215,"987 Elm Drive, City"
+George Martin,S007,5,2012-12-18,Male,Anna Martin,9876543216,"213 Spruce Street, City"
+Hannah Wilson,S008,6,2011-05-05,Female,David Wilson,9876543217,"134 Poplar Blvd, City"
+Ian Lee,S009,7,2010-09-09,Male,Grace Lee,9876543218,"345 Willow Way, City"
+Julia Turner,S010,5,2012-07-22,Female,Peter Turner,9876543219,"876 Chestnut St, City"

@@ -1,0 +1,71 @@
+.dashboard {
+  padding: 20px;
+  max-width: 900px;
+  margin: auto;
+  font-family: sans-serif;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.metrics {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 30px;
+}
+
+.card {
+  background-color: #f2f8ff;
+  border: 1px solid #d3e0f3;
+  padding: 20px;
+  border-radius: 8px;
+  width: 25%;
+  text-align: center;
+}
+
+.card h2 {
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+.drives {
+  background-color: #fffbe7;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+}
+
+.drives ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.drives li {
+  padding: 10px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.empty {
+  font-style: italic;
+  color: gray;
+}
+
+.dashboard-actions {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.dashboard-actions button {
+  padding: 12px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.dashboard-actions button:hover {
+  background-color: #0056b3;
+}
