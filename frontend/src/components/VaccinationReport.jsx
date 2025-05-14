@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { CSVLink } from 'react-csv';
 import * as XLSX from 'xlsx';
-import { jsPDF } from 'jspdf';
+import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import './VaccinationReport.css';
+
 
 export default function VaccinationReport() {
   const [students, setStudents] = useState([]);
@@ -11,6 +12,7 @@ export default function VaccinationReport() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [vaccineName, setVaccineName] = useState('');
+  const [vaccines, setVaccines] = useState([]); // Store available vaccines
   const [recordsPerPage, setRecordsPerPage] = useState(10);
 
   // Fetch data from the API
@@ -30,8 +32,20 @@ export default function VaccinationReport() {
     }
   };
 
+  // Fetch available vaccines when the component mounts
+  const fetchVaccineNames = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/vaccines');
+      const vaccineNames = await response.json();
+      setVaccines(vaccineNames);
+    } catch (error) {
+      console.error('Error fetching vaccine names:', error);
+    }
+  };
+
   // Fetch data on component mount and when filters/page change
   useEffect(() => {
+    fetchVaccineNames();
     fetchReportData(page);
   }, [vaccineName, page]);
 
@@ -56,19 +70,23 @@ export default function VaccinationReport() {
   };
 
   // Handle PDF export
-  const handleExportPDF = () => {
-    const doc = new jsPDF();
-    doc.autoTable({
-      head: [['Student Name', 'Class', 'Vaccine Name', 'Date Vaccinated']],
-      body: students.map((student) => [
-        student.student_name,
-        student.class,
-        student.vaccine_name,
-        student.date_vaccinated,
-      ]),
-    });
-    doc.save('vaccination_report.pdf');
-  };
+const handleExportPDF = () => {
+  const doc = new jsPDF();
+
+  doc.autoTable({
+    head: [['Student Name', 'Class', 'Vaccine Name', 'Date Vaccinated']],
+    body: students.map((student) => [
+      student.student_name,
+      student.class,
+      student.vaccine_name,
+      student.date_vaccinated,
+    ]),
+  });
+
+  doc.save('vaccination_report.pdf');
+};
+
+
 
   if (loading) {
     return <p>Loading vaccination report...</p>;
@@ -82,12 +100,14 @@ export default function VaccinationReport() {
       <div className="filters">
         <label>
           Vaccine Name:
-          <input
-            type="text"
-            value={vaccineName}
-            onChange={handleFilterChange}
-            placeholder="Filter by vaccine name"
-          />
+          <select value={vaccineName} onChange={handleFilterChange}>
+            <option value="">All Vaccines</option>
+            {vaccines.map((vaccine, index) => (
+              <option key={index} value={vaccine}>
+                {vaccine}
+              </option>
+            ))}
+          </select>
         </label>
       </div>
 

@@ -69,3 +69,13 @@ def export_report_csv():
         as_attachment=True,
         download_name='vaccination_report.csv'
     )
+
+
+@report_bp.route('/vaccines', methods=['GET'])
+def get_vaccine_names():
+    # Query to get distinct vaccine names
+    vaccines = db.session.query(VaccinationDrive.vaccine_name).distinct().all()
+    vaccine_names = [v[0] for v in vaccines]
+    print(vaccine_names)
+
+    return jsonify(vaccine_names)
