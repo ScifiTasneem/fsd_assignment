@@ -10,15 +10,19 @@ function StudentManagement() {
   const [selectedDrive, setSelectedDrive] = useState('');
   const [editStudent, setEditStudent] = useState(null);
 
-  // Fetch students with applied filters
   const fetchStudents = async () => {
-    const query = new URLSearchParams(filters).toString();
+    const query = new URLSearchParams({
+      name: filters.name,
+      studentClass: filters.studentClass,
+      vaccinated: filters.vaccinated,
+      drive_id: selectedDrive
+    }).toString();
+
     const res = await fetch(`http://localhost:5000/students?${query}`);
     const data = await res.json();
     setStudents(data);
   };
 
-  // Fetch vaccination drives for selection
   const fetchDrives = async () => {
     const res = await fetch('http://localhost:5000/dashboard/overview');
     const data = await res.json();
@@ -26,11 +30,13 @@ function StudentManagement() {
   };
 
   useEffect(() => {
-    fetchStudents();
     fetchDrives();
-  }, [filters]);
+  }, []);
 
-  // Add a new student
+  useEffect(() => {
+    fetchStudents();
+  }, [filters, selectedDrive]);
+
   const handleAddStudent = async () => {
     const res = await fetch('http://localhost:5000/students', {
       method: 'POST',
@@ -43,7 +49,6 @@ function StudentManagement() {
     }
   };
 
-  // Upload students from CSV
   const handleCsvUpload = async () => {
     if (!csvFile) return;
     const formData = new FormData();
@@ -58,7 +63,6 @@ function StudentManagement() {
     }
   };
 
-  // Mark a student as vaccinated
   const handleVaccinate = async (studentId) => {
     if (!selectedDrive) return;
     const res = await fetch(`http://localhost:5000/students/${studentId}/vaccinate`, {
@@ -69,7 +73,6 @@ function StudentManagement() {
     if (res.ok) fetchStudents();
   };
 
-  // Update student details
   const handleEditStudent = async () => {
     if (!editStudent) return;
     const res = await fetch(`http://localhost:5000/students/${editStudent.id}`, {
@@ -83,7 +86,6 @@ function StudentManagement() {
     }
   };
 
-  // Delete student
   const handleDeleteStudent = async (studentId) => {
     const res = await fetch(`http://localhost:5000/students/${studentId}`, {
       method: 'DELETE'
@@ -95,7 +97,6 @@ function StudentManagement() {
     <div className="student-management-container">
       <h2>Student Management</h2>
 
-      {/* Filter/Search */}
       <div className="filters">
         <input
           placeholder="Name"
@@ -118,7 +119,6 @@ function StudentManagement() {
         <button onClick={fetchStudents}>Search</button>
       </div>
 
-      {/* Add Student */}
       <div className="add-student-form">
         <input
           placeholder="Name"
@@ -138,13 +138,11 @@ function StudentManagement() {
         <button onClick={handleAddStudent}>Add Student</button>
       </div>
 
-      {/* CSV Upload */}
       <div className="csv-upload">
         <input type="file" accept=".csv" onChange={(e) => setCsvFile(e.target.files[0])} />
         <button onClick={handleCsvUpload}>Upload CSV</button>
       </div>
 
-      {/* Drive selection */}
       <div className="drive-select">
         <select value={selectedDrive} onChange={(e) => setSelectedDrive(e.target.value)}>
           <option value="">Select Drive</option>
@@ -156,7 +154,6 @@ function StudentManagement() {
         </select>
       </div>
 
-      {/* Students List */}
       <table className="student-table">
         <thead>
           <tr>
@@ -186,7 +183,6 @@ function StudentManagement() {
         </tbody>
       </table>
 
-      {/* Edit Student Modal */}
       {editStudent && (
         <div className="edit-modal">
           <h3>Edit Student</h3>

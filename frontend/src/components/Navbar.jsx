@@ -24,7 +24,7 @@ function Navbar({ onLogout }) {
             <Link to="/manage-drives">Vaccination Drives</Link>
           </li>
           <li>
-            <Link to="/reports">Reports</Link>
+            <Link to="/report">Reports</Link>
           </li>
           <li>
             <button onClick={onLogout}>Logout</button>

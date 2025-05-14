@@ -8,7 +8,7 @@ class VaccinationDrive(db.Model):
     vaccine_name = db.Column(db.String(100))
     date = db.Column(db.Date)
     available_doses = db.Column(db.Integer)
-    applicable_classes = db.Column(db.String(100))  # Comma-separated
+    applicable_classes = db.Column(db.String(100))
 
 class VaccinationRecord(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -16,9 +16,14 @@ class VaccinationRecord(db.Model):
     drive_id = db.Column(db.Integer, db.ForeignKey('vaccination_drive.id'), nullable=False)
     date_vaccinated = db.Column(db.Date, default=datetime.utcnow)
 
+    # Define relationships with unique backref names
+    student = db.relationship('Student', backref='vaccination_records_rel', lazy=True)
+    drive = db.relationship('VaccinationDrive', backref='vaccination_records')
+
     __table_args__ = (
         db.UniqueConstraint('student_id', 'drive_id', name='unique_vaccination'),
     )
+
 
 class Student(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -31,4 +36,4 @@ class Student(db.Model):
     contact_number = db.Column(db.String(20), nullable=True)
     address = db.Column(db.Text, nullable=True)
 
-    vaccination_records = db.relationship('VaccinationRecord', backref='student', lazy=True)
+    vaccination_records = db.relationship('VaccinationRecord', lazy=True)

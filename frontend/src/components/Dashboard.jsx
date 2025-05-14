@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
 
 export default function Dashboard() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -28,8 +28,6 @@ export default function Dashboard() {
 
   return (
     <div className="dashboard">
-      <h1>Dashboard Overview</h1>
-
       <div className="metrics">
         <div className="card">
           <h2>Total Students</h2>
@@ -45,7 +43,21 @@ export default function Dashboard() {
         </div>
       </div>
 
+
       <div className="drives">
+          <h2>Ongoing Vaccination Drives</h2>
+          {data.ongoing_drives.length === 0 ? (
+            <p className="empty">No ongoing drives today</p>
+          ) : (
+            <ul>
+              {data.ongoing_drives.map((drive) => (
+                <li key={drive.id}>
+                  <strong>{drive.vaccine}</strong> on {drive.date}
+                </li>
+              ))}
+            </ul>
+          )}
+
         <h2>Upcoming Vaccination Drives</h2>
         {data.upcoming_drives.length === 0 ? (
           <p className="empty">No upcoming drives</p>
@@ -58,13 +70,17 @@ export default function Dashboard() {
             ))}
           </ul>
         )}
+
+
       </div>
 
-      <div className="dashboard-actions">
-        <button onClick={() => navigate('/students')}>Manage Students</button>
-        <button onClick={() => navigate('/manage-drives')}>Manage Vaccinations</button>
-        <button onClick={() => navigate('/reports')}>Generate Report</button>
-      </div>
+
+
+      {/*<div className="dashboard-actions">*/}
+      {/*  <button onClick={() => navigate('/students')}>Manage Students</button>*/}
+      {/*  <button onClick={() => navigate('/manage-drives')}>Manage Vaccinations</button>*/}
+      {/*  <button onClick={() => navigate('/reports')}>Generate Report</button>*/}
+      {/*</div>*/}
     </div>
   );
 }

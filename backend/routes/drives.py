@@ -49,7 +49,7 @@ def edit_drive(drive_id):
 
     if not drive:
         return jsonify({"error": "Drive not found."}), 404
-    if drive.date < datetime.today():
+    if drive.date < datetime.today().date():
         return jsonify({"error": "Past drives cannot be edited."}), 403
 
     drive.date = datetime.strptime(data['date'], '%Y-%m-%d')
@@ -58,3 +58,4 @@ def edit_drive(drive_id):
 
     db.session.commit()
     return jsonify({"message": "Drive updated successfully."}), 200
+

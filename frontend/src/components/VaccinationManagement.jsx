@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import './VaccinationManagement.css';
 
 export default function VaccinationManagement() {
@@ -12,9 +11,10 @@ export default function VaccinationManagement() {
   });
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const [editMode, setEditMode] = useState(false);
+  const [editingDriveId, setEditingDriveId] = useState(null);
 
-  // Fetch the upcoming drives on component mount
+  // Fetch upcoming drives
   useEffect(() => {
     const fetchDrives = async () => {
       try {
@@ -31,7 +31,6 @@ export default function VaccinationManagement() {
     fetchDrives();
   }, []);
 
-  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -40,22 +39,16 @@ export default function VaccinationManagement() {
     }));
   };
 
-  // Handle checkbox changes for applicable classes
   const handleClassChange = (e) => {
     const { value, checked } = e.target;
     setFormData((prevData) => {
       const updatedClasses = checked
         ? [...prevData.applicable_classes, value]
-        : prevData.applicable_classes.filter((className) => className !== value);
-
-      return {
-        ...prevData,
-        applicable_classes: updatedClasses,
-      };
+        : prevData.applicable_classes.filter((c) => c !== value);
+      return { ...prevData, applicable_classes: updatedClasses };
     });
   };
 
-  // Submit the form to create a new vaccination drive
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage('');
@@ -68,47 +61,67 @@ export default function VaccinationManagement() {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/drives', {
-        method: 'POST',
+      const url = editMode
+        ? `http://localhost:5000/drives/${editingDriveId}`
+        : 'http://localhost:5000/drives';
+      const method = editMode ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
+
       const result = await response.json();
+
       if (response.ok) {
-        alert('Vaccination drive created successfully.');
+        alert(editMode ? 'Drive updated successfully.' : 'Drive created successfully.');
         setFormData({
           vaccine_name: '',
           date: '',
           available_doses: '',
           applicable_classes: [],
         });
-        // Refresh the drives list after adding the new drive
-        setDrives((prevDrives) => [...prevDrives, result]);
+        setEditMode(false);
+        setEditingDriveId(null);
+
+        // Refresh drives list
+        const updatedResponse = await fetch('http://localhost:5000/drives/upcoming');
+        const updatedDrives = await updatedResponse.json();
+        setDrives(updatedDrives);
       } else {
-        setErrorMessage(result.error || 'Error creating vaccination drive.');
+        setErrorMessage(result.error || 'Error saving vaccination drive.');
       }
     } catch (error) {
-      setErrorMessage('Error creating vaccination drive.');
       console.error(error);
+      setErrorMessage('Error saving vaccination drive.');
     }
   };
 
-  // Handle editing an existing drive
-  const handleEditDrive = async (driveId) => {
-    const driveToEdit = drives.find((drive) => drive.id === driveId);
-    if (driveToEdit && new Date(driveToEdit.date) < new Date()) {
+  const handleEditDrive = (driveId) => {
+    const drive = drives.find((d) => d.id === driveId);
+    if (!drive) return;
+
+    if (new Date(drive.date) < new Date()) {
       alert('This drive has already passed and cannot be edited.');
       return;
     }
-    // Navigate to the edit page (you can create a separate page for this)
-    navigate(`/drives/edit/${driveId}`);
+
+    setFormData({
+      vaccine_name: drive.vaccine_name,
+      date: drive.date,
+      available_doses: drive.available_doses,
+      applicable_classes: drive.applicable_classes,
+    });
+    setEditMode(true);
+    setEditingDriveId(driveId);
   };
 
-  // Render the form for adding a new drive
   const renderForm = () => (
     <form onSubmit={handleSubmit} className="drive-form">
-      <h2>Create New Vaccination Drive</h2>
+      <h2>{editMode ? 'Edit Vaccination Drive' : 'Create New Vaccination Drive'}</h2>
       {errorMessage && <p className="error">{errorMessage}</p>}
+
       <div className="form-group">
         <label>Vaccine Name</label>
         <input
@@ -119,6 +132,7 @@ export default function VaccinationManagement() {
           required
         />
       </div>
+
       <div className="form-group">
         <label>Drive Date</label>
         <input
@@ -129,6 +143,7 @@ export default function VaccinationManagement() {
           required
         />
       </div>
+
       <div className="form-group">
         <label>Available Doses</label>
         <input
@@ -139,6 +154,7 @@ export default function VaccinationManagement() {
           required
         />
       </div>
+
       <div className="form-group">
         <label>Applicable Classes</label>
         <div className="class-checkboxes">
@@ -155,11 +171,31 @@ export default function VaccinationManagement() {
           ))}
         </div>
       </div>
-      <button type="submit">Create Drive</button>
+
+      <button type="submit">{editMode ? 'Update Drive' : 'Create Drive'}</button>
+
+      {editMode && (
+        <button
+          type="button"
+          onClick={() => {
+            setEditMode(false);
+            setEditingDriveId(null);
+            setFormData({
+              vaccine_name: '',
+              date: '',
+              available_doses: '',
+              applicable_classes: [],
+            });
+          }}
+          className="cancel-button"
+          style={{ marginLeft: '10px' }}
+        >
+          Cancel Edit
+        </button>
+      )}
     </form>
   );
 
-  // Render the list of upcoming vaccination drives
   const renderUpcomingDrives = () => (
     <div className="upcoming-drives">
       <h2>Upcoming Vaccination Drives</h2>
