@@ -30,7 +30,7 @@ This is a full-stack application to manage student vaccination drives. It includ
    python -m backend.app
 6. The backend will run at: http://localhost:5000
 
-### 🌐 Frontend
+### Frontend
 
 1. Navigate to the frontend folder.
 
