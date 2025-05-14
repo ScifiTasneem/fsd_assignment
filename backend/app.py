@@ -12,7 +12,7 @@ import os
 script_directory = os.path.dirname(os.path.abspath(__file__))
 upload_folder = os.path.join(script_directory, "uploads")
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:3001"}})
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///vaccination.db'
 app.config['UPLOAD_FOLDER'] = upload_folder
 db.init_app(app)
@@ -28,7 +28,3 @@ with app.app_context():
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-
-
-
